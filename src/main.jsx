@@ -13,8 +13,10 @@ import {
 } from "@phosphor-icons/react";
 import {
   motion,
+  useMotionTemplate,
   useMotionValue,
   useReducedMotion,
+  useScroll,
   useSpring,
   useTransform,
 } from "motion/react";
@@ -107,12 +109,28 @@ function MagneticLink({ href, className = "", children }) {
   );
 }
 
+function ScrollProgress() {
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 160,
+    damping: 28,
+    mass: 0.25,
+    skipInitialAnimation: true,
+  });
+
+  return <motion.div className="scroll-progress" style={{ scaleX: reduce ? 0 : scaleX }} aria-hidden="true" />;
+}
+
 function ProjectCard({ project, index }) {
   const reduce = useReducedMotion();
   const cardX = useMotionValue(0);
   const cardY = useMotionValue(0);
-  const rotateX = useTransform(cardY, [-0.5, 0.5], [2.5, -2.5]);
-  const rotateY = useTransform(cardX, [-0.5, 0.5], [-2.5, 2.5]);
+  const spotlightX = useMotionValue(50);
+  const spotlightY = useMotionValue(50);
+  const rotateX = useTransform(cardY, [-0.5, 0.5], [3.5, -3.5]);
+  const rotateY = useTransform(cardX, [-0.5, 0.5], [-3.5, 3.5]);
+  const spotlight = useMotionTemplate`radial-gradient(440px circle at ${spotlightX}% ${spotlightY}%, rgba(166, 130, 74, 0.2), transparent 62%)`;
 
   return (
     <motion.article
@@ -121,18 +139,26 @@ function ProjectCard({ project, index }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.75, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={reduce ? undefined : { y: -8 }}
       style={reduce ? undefined : { rotateX, rotateY, transformPerspective: 1200 }}
       onPointerMove={(event) => {
         if (reduce) return;
         const rect = event.currentTarget.getBoundingClientRect();
-        cardX.set((event.clientX - rect.left) / rect.width - 0.5);
-        cardY.set((event.clientY - rect.top) / rect.height - 0.5);
+        const x = (event.clientX - rect.left) / rect.width;
+        const y = (event.clientY - rect.top) / rect.height;
+        cardX.set(x - 0.5);
+        cardY.set(y - 0.5);
+        spotlightX.set(x * 100);
+        spotlightY.set(y * 100);
       }}
       onPointerLeave={() => {
         cardX.set(0);
         cardY.set(0);
+        spotlightX.set(50);
+        spotlightY.set(50);
       }}
     >
+      <motion.div className="project-spotlight" style={reduce ? undefined : { background: spotlight }} aria-hidden="true" />
       <div className="project-media">
         <img src={project.image} alt={`${project.title} project preview`} loading={index ? "lazy" : "eager"} />
       </div>
@@ -200,6 +226,15 @@ function App() {
   const pointerY = useMotionValue(0);
   const imageX = useTransform(pointerX, [-0.5, 0.5], [-10, 10]);
   const imageY = useTransform(pointerY, [-0.5, 0.5], [-8, 8]);
+  const { scrollYProgress: heroProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const heroCopyY = useTransform(heroProgress, [0, 1], [0, 80]);
+  const heroMediaY = useTransform(heroProgress, [0, 1], [0, -48]);
+  const combinedHeroY = useTransform(() => imageY.get() + heroMediaY.get());
+  const heroMediaScale = useTransform(heroProgress, [0, 1], [1, 0.94]);
+  const heroMediaRotate = useTransform(heroProgress, [0, 1], [0, -1.5]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -214,6 +249,7 @@ function App() {
 
   return (
     <>
+      <ScrollProgress />
       <header className="nav">
         <a className="monogram" href="#top" aria-label="Back to top">AK</a>
         <nav aria-label="Primary navigation" className={menuOpen ? "nav-links open" : "nav-links"}>
@@ -241,7 +277,20 @@ function App() {
           }}
         >
           <motion.div
+            className="hero-orb hero-orb-one"
+            animate={reduce ? undefined : { x: [0, 42, -18, 0], y: [0, -30, 24, 0], scale: [1, 1.12, 0.96, 1] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            aria-hidden="true"
+          />
+          <motion.div
+            className="hero-orb hero-orb-two"
+            animate={reduce ? undefined : { x: [0, -34, 22, 0], y: [0, 24, -26, 0], scale: [1, 0.92, 1.08, 1] }}
+            transition={{ duration: 19, repeat: Infinity, ease: "easeInOut" }}
+            aria-hidden="true"
+          />
+          <motion.div
             className="hero-copy"
+            style={reduce ? undefined : { y: heroCopyY }}
             initial={reduce ? false : "hidden"}
             animate="visible"
             variants={{
@@ -275,7 +324,12 @@ function App() {
           </motion.div>
           <motion.div
             className="hero-visual"
-            style={reduce ? undefined : { x: imageX, y: imageY }}
+            style={reduce ? undefined : {
+              x: imageX,
+              y: combinedHeroY,
+              scale: heroMediaScale,
+              rotate: heroMediaRotate,
+            }}
             initial={reduce ? false : { opacity: 1, clipPath: "inset(0 100% 0 0)" }}
             animate={{ opacity: 1, clipPath: "inset(0 0% 0 0)" }}
             transition={{ duration: 1.1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
