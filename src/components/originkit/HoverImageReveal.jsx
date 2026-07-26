@@ -26,7 +26,7 @@ export default function HoverImageReveal({ items }) {
           </div>
 
           <div className="project-reveal-main">
-            <h3>
+            <h3 className={project.title.length > 20 ? "is-long" : ""}>
               <span>{project.title}</span>
               <span aria-hidden="true">{project.title}</span>
             </h3>
@@ -38,7 +38,7 @@ export default function HoverImageReveal({ items }) {
             <div className="project-links">
               {project.live && (
                 <a href={project.live} target="_blank" rel="noreferrer">
-                  Visit <ArrowUpRight />
+                  {project.liveLabel ?? "Visit"} <ArrowUpRight />
                 </a>
               )}
               {project.repo && (
@@ -47,7 +47,7 @@ export default function HoverImageReveal({ items }) {
                 </a>
               )}
               {!project.repo && !project.live && (
-                <span className="private-note">Private Project (Company Internal App)</span>
+                <span className="private-note">Company&apos;s internal vehicle inspection app</span>
               )}
             </div>
           </div>

@@ -1,10 +1,8 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ArrowDownRight,
   ArrowUpRight,
-  Brain,
-  Code,
   GithubLogo,
   LinkedinLogo,
   PaperPlaneTilt,
@@ -22,10 +20,10 @@ import "@fontsource/dm-sans/400.css";
 import "@fontsource/dm-sans/500.css";
 import "@fontsource/dm-sans/600.css";
 import "@fontsource/playfair-display/500-italic.css";
-import CurvedMarquee from "./components/originkit/CurvedMarquee";
 import HoverImageReveal from "./components/originkit/HoverImageReveal";
 import MeshTextHover from "./components/originkit/MeshTextHover";
 import ShinyPill from "./components/originkit/ShinyPill";
+import DustTextReveal from "./components/originkit/DustTextReveal";
 import WaterButton from "./components/originkit/WaterButton";
 import CursorGrid from "./components/reactbits/CursorGrid/CursorGrid";
 import SplashCursor from "./components/reactbits/SplashCursor";
@@ -61,11 +59,192 @@ const projects = [
   },
 ];
 
-const skillGroups = [
-  { title: "Web", items: "React, TypeScript, JavaScript, Tailwind CSS, Node.js, Express, MongoDB" },
-  { title: "AI / ML", items: "Python, OpenCV, NumPy, ResNet, SIFT, OCR, image processing" },
-  { title: "Product", items: "Flutter, REST APIs, offline storage, camera integration, Cloudinary, Vercel" },
+const aiProjects = [
+  {
+    title: "Custom Canny Edge Detector",
+    type: "Computer vision",
+    copy: "A from-scratch Canny implementation covering convolution, gradient analysis, non-maximum suppression, and hysteresis linking.",
+    tags: ["Python", "NumPy", "ImageIO", "Computer vision"],
+    live: "/vision.html",
+    liveLabel: "Try now",
+    repo: "https://github.com/aswab007-ops/canny-edge-detector",
+  },
+  {
+    title: "Scene Recognition",
+    displayType: "BoVW + ResNet",
+    type: "BoVW + ResNet",
+    copy: "Fifteen-class scene recognition comparing SIFT-based visual vocabularies with ResNet feature extraction.",
+    tags: ["Python", "SIFT", "K-means", "SVM", "ResNet"],
+    repo: "https://github.com/aswab007-ops/scene-recognition-using-bow-and-resnet",
+  },
+  {
+    title: "Lane Detection",
+    type: "Computer vision",
+    copy: "A lane-departure pipeline built from HSV filtering through custom Canny, ROI selection, Hough transforms, and regression.",
+    tags: ["Python", "NumPy", "Hough transform", "Regression"],
+    live: "/lane.html",
+    liveLabel: "Try now",
+    repo: "https://github.com/aswab007-ops/lane-detection",
+  },
 ];
+
+const systems = [
+  {
+    id: "person-removal",
+    label: "Person Removal",
+    defaultNode: "change",
+    links: [
+      { label: "Source", href: "https://github.com/aswab007-ops/person-removal-through-change-detection" },
+    ],
+    nodes: [
+      {
+        id: "sequence",
+        eyebrow: "Input",
+        label: "Frame sequence",
+        title: "A scene observed over time",
+        description: "Ordered image frames provide stable background evidence and the later foreground sequence containing the moving subject.",
+        owned: ["Frame loading", "Dataset presets", "Sequence handling"],
+      },
+      {
+        id: "background",
+        eyebrow: "Model",
+        label: "Background",
+        title: "The empty scene becomes measurable",
+        description: "Stable frames build a per-pixel statistical background model that captures expected color and natural variation.",
+        owned: ["Background sampling", "Pixel statistics", "Model construction"],
+      },
+      {
+        id: "change",
+        eyebrow: "Detection",
+        label: "Mahalanobis",
+        title: "Motion separates from the scene",
+        description: "Each incoming pixel is compared with the learned model, turning statistically meaningful change into a foreground mask.",
+        owned: ["Distance scoring", "Threshold tuning", "Binary masks"],
+      },
+      {
+        id: "cleanup",
+        eyebrow: "Refinement",
+        label: "Mask cleanup",
+        title: "Noise gives way to a clear subject",
+        description: "Morphological filtering and connected-component checks remove scattered detections while preserving meaningful moving regions.",
+        owned: ["Morphology", "Blob filtering", "Area controls"],
+      },
+      {
+        id: "reconstruction",
+        eyebrow: "Output",
+        label: "Person removed",
+        title: "The background replaces the subject",
+        description: "Clean masks guide alpha blending, reconstructing the hidden scene and exporting processed frames and a final video.",
+        owned: ["Alpha blending", "Frame export", "Video assembly"],
+      },
+    ],
+  },
+  {
+    id: "scene-recognition",
+    label: "Scene Recognition",
+    defaultNode: "features",
+    links: [
+      { label: "Source", href: "https://github.com/aswab007-ops/scene-recognition-using-bow-and-resnet" },
+    ],
+    nodes: [
+      {
+        id: "dataset",
+        eyebrow: "Input",
+        label: "15 scene classes",
+        title: "Images enter a shared benchmark",
+        description: "Training and test folders organize fifteen indoor and outdoor scene categories for repeatable comparison.",
+        owned: ["Dataset loading", "Train-test split", "Label handling"],
+      },
+      {
+        id: "features",
+        eyebrow: "Features",
+        label: "SIFT · ResNet",
+        title: "Two ways to describe a scene",
+        description: "Local SIFT descriptors and deep ResNet embeddings create parallel feature representations for the same recognition task.",
+        owned: ["SIFT extraction", "ResNet backbone", "Feature caching"],
+      },
+      {
+        id: "representation",
+        eyebrow: "Encoding",
+        label: "K-Means · BoVW",
+        title: "Local features become visual words",
+        description: "K-Means builds a visual vocabulary, then SIFT descriptors are counted into fixed-length Bag of Visual Words histograms.",
+        owned: ["Vocabulary creation", "Histogram encoding", "Parameter sweeps"],
+      },
+      {
+        id: "classification",
+        eyebrow: "Models",
+        label: "KNN · SVM",
+        title: "Representations become predictions",
+        description: "KNN and SVM classifiers learn from both feature families, exposing how classical and deep representations compare.",
+        owned: ["KNN pipeline", "SVM training", "Model variants"],
+      },
+      {
+        id: "evaluation",
+        eyebrow: "Output",
+        label: "Metrics & reports",
+        title: "Every model is tested consistently",
+        description: "Automated evaluation compares accuracy, F1 score, runtime, confusion matrices, and saved result summaries across configurations.",
+        owned: ["Batch evaluation", "Metric parsing", "Result reporting"],
+      },
+    ],
+  },
+  {
+    id: "carmandi",
+    label: "Carmandi Inspection",
+    defaultNode: "capture",
+    privateNote: "Company's internal vehicle inspection app",
+    nodes: [
+      {
+        id: "interface",
+        eyebrow: "Interface",
+        label: "Flutter",
+        title: "A focused field workflow",
+        description: "The mobile interface guides inspectors through structured vehicle checks without burying the next action.",
+        owned: ["Flutter frontend", "Inspection forms", "Responsive states"],
+      },
+      {
+        id: "capture",
+        eyebrow: "Capture",
+        label: "Camera",
+        title: "Evidence gathered in context",
+        description: "Camera-led steps keep damage photos attached to the correct vehicle area and inspection record.",
+        owned: ["Camera integration", "Damage capture", "Media states"],
+      },
+      {
+        id: "offline",
+        eyebrow: "Local data",
+        label: "Offline-first",
+        title: "Field work survives weak signal",
+        description: "Inspection progress and media remain available locally, so an unstable connection does not stop the workflow.",
+        owned: ["Local persistence", "Draft recovery", "Offline UX"],
+      },
+      {
+        id: "sync",
+        eyebrow: "Sync",
+        label: "REST API",
+        title: "Mobile data reaches the backend",
+        description: "Structured inspection records and media metadata move through a REST API with reliable state handling.",
+        owned: ["REST backend", "Payload design", "Sync states"],
+      },
+      {
+        id: "review",
+        eyebrow: "Outcome",
+        label: "Inspection record",
+        title: "A complete vehicle history",
+        description: "Captured details, checks, and damage evidence resolve into one reviewable inspection record.",
+        owned: ["Review flow", "Record structure", "End-to-end delivery"],
+      },
+    ],
+  },
+];
+
+systems.splice(1, 2, systems[2], systems[1]);
+
+console.assert(
+  systems.every((system) => system.nodes.some((node) => node.id === system.defaultNode)),
+  "Every system must declare a valid default node.",
+);
 
 function Reveal({ children, className = "", delay = 0 }) {
   const reduce = useReducedMotion();
@@ -153,6 +332,127 @@ function ContactForm() {
         Email me <PaperPlaneTilt />
       </WaterButton>
     </form>
+  );
+}
+
+function SystemAnatomy() {
+  const [activeSystemId, setActiveSystemId] = useState(systems[0].id);
+  const [activeNodeId, setActiveNodeId] = useState(systems[0].defaultNode);
+  const tabRefs = useRef([]);
+  const activeSystem = systems.find((system) => system.id === activeSystemId);
+  const activeNode = activeSystem.nodes.find((node) => node.id === activeNodeId);
+
+  const selectSystem = (system) => {
+    setActiveSystemId(system.id);
+    setActiveNodeId(system.defaultNode);
+  };
+
+  const handleTabKeyDown = (event, index) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const last = systems.length - 1;
+    const next = event.key === "Home"
+      ? 0
+      : event.key === "End"
+        ? last
+        : event.key === "ArrowRight"
+          ? (index + 1) % systems.length
+          : (index - 1 + systems.length) % systems.length;
+    selectSystem(systems[next]);
+    tabRefs.current[next]?.focus();
+  };
+
+  return (
+    <section className="system-anatomy section" id="under-the-hood">
+      <Reveal className="system-anatomy-heading">
+        <p className="section-kicker"><SweepText>System anatomy</SweepText></p>
+        <h2><MeshTextHover>Under the hood.</MeshTextHover></h2>
+        <p><ShinyPill>Follow each project from first input to finished outcome.</ShinyPill></p>
+      </Reveal>
+
+      <Reveal className="system-anatomy-shell">
+        <div className="system-tabs" role="tablist" aria-label="Choose a project">
+          {systems.map((system, index) => (
+            <button
+              className={system.id === activeSystemId ? "is-active" : ""}
+              id={`system-tab-${system.id}`}
+              key={system.id}
+              onClick={() => selectSystem(system)}
+              onKeyDown={(event) => handleTabKeyDown(event, index)}
+              ref={(element) => { tabRefs.current[index] = element; }}
+              role="tab"
+              tabIndex={system.id === activeSystemId ? 0 : -1}
+              aria-controls="system-anatomy-panel"
+              aria-selected={system.id === activeSystemId}
+            >
+              {system.label}
+            </button>
+          ))}
+        </div>
+
+        <div
+          className="system-anatomy-content"
+          id="system-anatomy-panel"
+          role="tabpanel"
+          aria-labelledby={`system-tab-${activeSystem.id}`}
+        >
+          <div className="system-flow" aria-label={`${activeSystem.label} project flow`}>
+            {activeSystem.nodes.map((node, index) => (
+              <React.Fragment key={node.id}>
+                <button
+                  className={`system-node${node.id === activeNode.id ? " is-active" : ""}`}
+                  onClick={() => setActiveNodeId(node.id)}
+                  aria-pressed={node.id === activeNode.id}
+                  aria-label={`Show ${node.eyebrow}: ${node.label}`}
+                >
+                  <span>{node.eyebrow}</span>
+                  <strong>{node.label}</strong>
+                </button>
+                {index < activeSystem.nodes.length - 1 && (
+                  <span className="system-connector" style={{ "--connector-index": index }} aria-hidden="true" />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          <aside className="system-detail" key={`${activeSystem.id}-${activeNode.id}`} aria-live="polite">
+            <DustTextReveal as="p">{activeNode.eyebrow}</DustTextReveal>
+            <DustTextReveal as="h3" delay={0.04}>{activeNode.title}</DustTextReveal>
+            <DustTextReveal as="p" delay={0.08}>{activeNode.description}</DustTextReveal>
+            <div className="system-owned">
+              <DustTextReveal>What I owned</DustTextReveal>
+              <ul>
+                {activeNode.owned.map((item, index) => (
+                  <li key={item}><DustTextReveal delay={0.1 + index * 0.035}>{item}</DustTextReveal></li>
+                ))}
+              </ul>
+            </div>
+            <div className="system-proof">
+              {activeSystem.links?.map((link) => link.label === "Source" ? (
+                <a
+                  className="github-button"
+                  href={link.href}
+                  key={link.label}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`View ${activeSystem.label} source on GitHub`}
+                >
+                  <span className="github-icon-shell"><GithubLogo weight="fill" /></span>
+                  <span className="github-button-bg" aria-hidden="true" />
+                </a>
+              ) : (
+                <a href={link.href} key={link.label} target={link.href.startsWith("http") ? "_blank" : undefined} rel={link.href.startsWith("http") ? "noreferrer" : undefined}>
+                  <DustTextReveal>{link.label}</DustTextReveal> <ArrowUpRight />
+                </a>
+              ))}
+              {activeSystem.privateNote && (
+                <DustTextReveal className="system-private-note">{activeSystem.privateNote}</DustTextReveal>
+              )}
+            </div>
+          </aside>
+        </div>
+      </Reveal>
+    </section>
   );
 }
 
@@ -297,47 +597,16 @@ function App() {
           </Reveal>
         </section>
 
-        <section className="about section" id="about">
-          <Reveal className="about-lead">
-            <span className="large-mark">A</span>
-            <div>
-              <h2>Engineering that starts with the person using it.</h2>
-              <p>
-                <ShinyPill>I work across web development and applied AI/ML, from responsive React experiences and full-stack systems to computer vision pipelines built with OpenCV and deep learning.</ShinyPill>
-              </p>
-            </div>
+        <section className="work section ai-work" id="ai-work">
+          <Reveal className="section-heading">
+            <p className="section-kicker"><SweepText>AI/ML &amp; Computer Vision</SweepText></p>
+            <h2><MeshTextHover>Intelligence you can try.</MeshTextHover></h2>
+            <p><ShinyPill>Computer-vision systems built from first principles, classical feature pipelines, and deep learning.</ShinyPill></p>
           </Reveal>
-          <div className="principles">
-            <Reveal>
-              <Code />
-              <h3><SweepText>Own the full path</SweepText></h3>
-              <p><ShinyPill>Architecture, interface, data, deployment. I stay close to the whole product so every layer supports the same outcome.</ShinyPill></p>
-            </Reveal>
-            <Reveal delay={0.08}>
-              <Brain />
-              <h3><SweepText>Make intelligence useful</SweepText></h3>
-              <p><ShinyPill>AI earns its place when it solves a real task clearly, reliably, and without making the product harder to understand.</ShinyPill></p>
-            </Reveal>
-          </div>
+          <HoverImageReveal items={aiProjects} />
         </section>
 
-        <section className="skills section" id="skills">
-          <Reveal>
-            <h2><MeshTextHover>Range, without the noise.</MeshTextHover></h2>
-          </Reveal>
-          <div className="skill-list">
-            {skillGroups.map((group, index) => (
-              <Reveal className="skill-row" key={group.title} delay={index * 0.06}>
-                <span><SweepText>{group.title}</SweepText></span>
-                <p>{group.items}</p>
-              </Reveal>
-            ))}
-          </div>
-          <CurvedMarquee
-            text="REACT · TYPESCRIPT · PYTHON · OPENCV · FLUTTER · NODE.JS · MONGODB · COMPUTER VISION ·"
-            color="#a6824a"
-          />
-        </section>
+        <SystemAnatomy />
 
         <section className="experience section">
           <Reveal className="experience-heading">
