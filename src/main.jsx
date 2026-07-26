@@ -25,6 +25,8 @@ import "@fontsource/playfair-display/500-italic.css";
 import CurvedMarquee from "./components/originkit/CurvedMarquee";
 import HoverImageReveal from "./components/originkit/HoverImageReveal";
 import MeshTextHover from "./components/originkit/MeshTextHover";
+import ShinyPill from "./components/originkit/ShinyPill";
+import WaterButton from "./components/originkit/WaterButton";
 import CursorGrid from "./components/reactbits/CursorGrid/CursorGrid";
 import SplashCursor from "./components/reactbits/SplashCursor";
 import SweepText from "./components/SweepText";
@@ -53,7 +55,7 @@ const projects = [
     title: "Carmandi Website",
     type: "Contributor",
     copy: "A responsive automotive marketplace experience with auctions, search, account flows, dashboards, and reusable product components.",
-    tags: ["Next.js", "TypeScript", "Tailwind", "UX"],
+    tags: ["Next.js", "TypeScript", "Tailwind"],
     live: "https://www.carmandi.pk",
     repo: null,
   },
@@ -147,9 +149,9 @@ function ContactForm() {
         What are you building?
         <textarea name="message" required rows="4" placeholder="A short project outline" />
       </label>
-      <button className="button button-cream" type="submit">
+      <WaterButton type="submit">
         Email me <PaperPlaneTilt />
-      </button>
+      </WaterButton>
     </form>
   );
 }
@@ -245,7 +247,7 @@ function App() {
               <em><MeshTextHover>AI/ML engineer.</MeshTextHover></em>
             </motion.h1>
             <motion.p className="hero-lede" variants={{ hidden: { opacity: 1 }, visible: { opacity: 1 } }}>
-              I build thoughtful interfaces and intelligent systems that turn complex ideas into useful products.
+              <ShinyPill>I build thoughtful interfaces and intelligent systems that turn complex ideas into useful products.</ShinyPill>
             </motion.p>
             <motion.div className="hero-actions" variants={{ hidden: { opacity: 1 }, visible: { opacity: 1 } }}>
               <MagneticLink href="#work" className="button button-primary">
@@ -285,11 +287,11 @@ function App() {
           <Reveal className="section-heading">
             <p className="section-kicker"><SweepText>Works</SweepText></p>
             <h2><MeshTextHover>Products with purpose.</MeshTextHover></h2>
-            <p>Full-stack platforms, product experiences, and practical AI built from the interface down.</p>
+            <p><ShinyPill>Full-stack platforms, product experiences, and practical AI built from the interface down.</ShinyPill></p>
           </Reveal>
           <HoverImageReveal items={projects} />
           <Reveal className="archive-link">
-            <a href="https://github.com/aswab007-ops?tab=repositories" target="_blank" rel="noreferrer">
+            <a className="underline-link" href="https://github.com/aswab007-ops?tab=repositories" target="_blank" rel="noreferrer">
               Explore the full GitHub archive <ArrowUpRight />
             </a>
           </Reveal>
@@ -301,7 +303,7 @@ function App() {
             <div>
               <h2>Engineering that starts with the person using it.</h2>
               <p>
-                I work across web development and applied AI/ML, from responsive React experiences and full-stack systems to computer vision pipelines built with OpenCV and deep learning.
+                <ShinyPill>I work across web development and applied AI/ML, from responsive React experiences and full-stack systems to computer vision pipelines built with OpenCV and deep learning.</ShinyPill>
               </p>
             </div>
           </Reveal>
@@ -309,12 +311,12 @@ function App() {
             <Reveal>
               <Code />
               <h3><SweepText>Own the full path</SweepText></h3>
-              <p>Architecture, interface, data, deployment. I stay close to the whole product so every layer supports the same outcome.</p>
+              <p><ShinyPill>Architecture, interface, data, deployment. I stay close to the whole product so every layer supports the same outcome.</ShinyPill></p>
             </Reveal>
             <Reveal delay={0.08}>
               <Brain />
               <h3><SweepText>Make intelligence useful</SweepText></h3>
-              <p>AI earns its place when it solves a real task clearly, reliably, and without making the product harder to understand.</p>
+              <p><ShinyPill>AI earns its place when it solves a real task clearly, reliably, and without making the product harder to understand.</ShinyPill></p>
             </Reveal>
           </div>
         </section>
@@ -340,23 +342,23 @@ function App() {
         <section className="experience section">
           <Reveal className="experience-heading">
             <h2><MeshTextHover>Building across disciplines.</MeshTextHover></h2>
-            <p>My work connects product craft with technical depth.</p>
+            <p><ShinyPill>My work connects product craft with technical depth.</ShinyPill></p>
           </Reveal>
           <div className="experience-track">
             <Reveal className="experience-item">
               <span><SweepText>Contributor</SweepText></span>
               <h3>Carmandi</h3>
-              <p>Vehicle inspection workflows and a full automotive marketplace across mobile and web.</p>
+              <p><ShinyPill>Vehicle inspection workflows and a full automotive marketplace across mobile and web.</ShinyPill></p>
             </Reveal>
             <Reveal className="experience-item" delay={0.08}>
               <span><SweepText>Independent builder</SweepText></span>
               <h3>RozGo</h3>
-              <p>Full-stack product ownership across authentication, media, analytics, review flows, and deployment.</p>
+              <p><ShinyPill>Full-stack product ownership across authentication, media, analytics, review flows, and deployment.</ShinyPill></p>
             </Reveal>
             <Reveal className="experience-item" delay={0.16}>
               <span><SweepText>AI/ML</SweepText></span>
               <h3>Computer vision</h3>
-              <p>Scene recognition, camera geometry, 3D reconstruction, edge detection, OCR, and image processing.</p>
+              <p><ShinyPill>Scene recognition, camera geometry, 3D reconstruction, edge detection, OCR, and image processing.</ShinyPill></p>
             </Reveal>
           </div>
         </section>
@@ -366,7 +368,7 @@ function App() {
             <div className="contact-copy">
               <p className="section-kicker"><SweepText>Start a conversation</SweepText></p>
               <h2><MeshTextHover>Have an idea worth building?</MeshTextHover></h2>
-              <p>I’m open to web, product, and applied AI/ML opportunities.</p>
+              <p><ShinyPill>I’m open to web, product, and applied AI/ML opportunities.</ShinyPill></p>
             </div>
             <ContactForm />
           </Reveal>
@@ -376,9 +378,18 @@ function App() {
       <footer>
         <span>© {new Date().getFullYear()} Muhammad Aswab Khalil</span>
         <div>
-          <a href="https://github.com/aswab007-ops" target="_blank" rel="noreferrer" aria-label="GitHub"><GithubLogo /></a>
+          <a
+            className="github-button"
+            href="https://github.com/aswab007-ops"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Visit Muhammad Aswab Khalil on GitHub"
+          >
+            <span className="github-icon-shell"><GithubLogo weight="fill" /></span>
+            <span className="github-button-bg" aria-hidden="true" />
+          </a>
           <a href="https://www.linkedin.com/in/muhammad-aswab-khalil-b578a235a/" target="_blank" rel="noreferrer" aria-label="LinkedIn"><LinkedinLogo /></a>
-          <a href="#top">Back to top <ArrowUpRight /></a>
+          <a className="underline-link" href="#top">Back to top <ArrowUpRight /></a>
         </div>
       </footer>
     </>

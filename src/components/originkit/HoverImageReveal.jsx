@@ -2,6 +2,8 @@ import React from "react";
 import { ArrowUpRight, GithubLogo } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
 import SweepText from "../SweepText";
+import ShinyPill from "./ShinyPill";
+import RandomLetterSwap from "./RandomLetterSwap";
 
 // Adapted from OriginKit's Hover Image Reveal component.
 export default function HoverImageReveal({ items }) {
@@ -28,11 +30,11 @@ export default function HoverImageReveal({ items }) {
               <span>{project.title}</span>
               <span aria-hidden="true">{project.title}</span>
             </h3>
-            <p>{project.copy}</p>
+            <p><ShinyPill>{project.copy}</ShinyPill></p>
           </div>
 
           <div className="project-reveal-side">
-            <span>{project.tags.join(" · ")}</span>
+            <RandomLetterSwap text={project.tags.join(" · ")} />
             <div className="project-links">
               {project.live && (
                 <a href={project.live} target="_blank" rel="noreferrer">
