@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import SweepText from "../SweepText";
 import ShinyPill from "./ShinyPill";
 import RandomLetterSwap from "./RandomLetterSwap";
+import LiquidDistortion from "./LiquidDistortion";
 
 // Adapted from OriginKit's Hover Image Reveal component.
 export default function HoverImageReveal({ items }) {
@@ -20,9 +21,16 @@ export default function HoverImageReveal({ items }) {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.7, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
         >
+          <LiquidDistortion seed={index + 1} />
           <div className="project-reveal-index">
             <span>0{index + 1}</span>
-            <SweepText>{project.displayType ?? project.type}</SweepText>
+            {project.displayTypeLines ? (
+              <span className="project-type-lines">
+                {project.displayTypeLines.map((line) => <SweepText key={line}>{line}</SweepText>)}
+              </span>
+            ) : (
+              <SweepText>{project.displayType ?? project.type}</SweepText>
+            )}
           </div>
 
           <div className="project-reveal-main">

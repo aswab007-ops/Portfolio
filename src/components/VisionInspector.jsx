@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowCounterClockwise, ImageSquare, UploadSimple } from "@phosphor-icons/react";
 import { clamp, gradients, luminance } from "./imageProcessing";
+import MeshTextHover from "./originkit/MeshTextHover";
+import SpotlightText from "./originkit/SpotlightText";
 
 const MODES = {
   original: { label: "Original", detail: "Unprocessed source image" },
@@ -185,12 +187,12 @@ function VisionInspector() {
       <div className="vision-heading">
         <div>
           <p className="section-kicker">Interactive project</p>
-          <h2>See what an algorithm sees.</h2>
+          <h2><MeshTextHover>See what an algorithm sees.</MeshTextHover></h2>
         </div>
-        <p>
+        <SpotlightText className="vision-description">
           Vision Inspector turns any image into a live computer-vision study.
           Reveal structure, feature response, and color regions directly in your browser.
-        </p>
+        </SpotlightText>
       </div>
 
       <div className="vision-shell">

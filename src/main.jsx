@@ -25,6 +25,8 @@ import MeshTextHover from "./components/originkit/MeshTextHover";
 import ShinyPill from "./components/originkit/ShinyPill";
 import DustTextReveal from "./components/originkit/DustTextReveal";
 import WaterButton from "./components/originkit/WaterButton";
+import DynamicWeight from "./components/originkit/DynamicWeight";
+import GithubButton from "./components/GithubButton";
 import CursorGrid from "./components/reactbits/CursorGrid/CursorGrid";
 import SplashCursor from "./components/reactbits/SplashCursor";
 import SweepText from "./components/SweepText";
@@ -43,7 +45,7 @@ const projects = [
   },
   {
     title: "Carmandi Inspection",
-    displayType: "Flutter mobile frontend · REST API backend",
+    displayTypeLines: ["Flutter mobile frontend", "REST API backend"],
     type: "Flutter mobile frontend · REST API backend",
     copy: "A production-ready Flutter app for structured vehicle inspections, camera-led damage capture, and reliable offline-first field work.",
     tags: ["Flutter", "Dart", "Camera", "Offline sync"],
@@ -92,7 +94,7 @@ const systems = [
   {
     id: "person-removal",
     label: "Person Removal",
-    defaultNode: "change",
+    defaultNode: "sequence",
     links: [
       { label: "Source", href: "https://github.com/aswab007-ops/person-removal-through-change-detection" },
     ],
@@ -142,7 +144,7 @@ const systems = [
   {
     id: "scene-recognition",
     label: "Scene Recognition",
-    defaultNode: "features",
+    defaultNode: "dataset",
     links: [
       { label: "Source", href: "https://github.com/aswab007-ops/scene-recognition-using-bow-and-resnet" },
     ],
@@ -192,7 +194,7 @@ const systems = [
   {
     id: "carmandi",
     label: "Carmandi Inspection",
-    defaultNode: "capture",
+    defaultNode: "interface",
     privateNote: "Company's internal vehicle inspection app",
     nodes: [
       {
@@ -429,17 +431,11 @@ function SystemAnatomy() {
             </div>
             <div className="system-proof">
               {activeSystem.links?.map((link) => link.label === "Source" ? (
-                <a
-                  className="github-button"
+                <GithubButton
                   href={link.href}
                   key={link.label}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={`View ${activeSystem.label} source on GitHub`}
-                >
-                  <span className="github-icon-shell"><GithubLogo weight="fill" /></span>
-                  <span className="github-button-bg" aria-hidden="true" />
-                </a>
+                  label={`View ${activeSystem.label} source on GitHub`}
+                />
               ) : (
                 <a href={link.href} key={link.label} target={link.href.startsWith("http") ? "_blank" : undefined} rel={link.href.startsWith("http") ? "noreferrer" : undefined}>
                   <DustTextReveal>{link.label}</DustTextReveal> <ArrowUpRight />
@@ -459,19 +455,11 @@ function SystemAnatomy() {
 function App() {
   const reduce = useReducedMotion();
   const heroRef = useRef(null);
-  const pointerX = useMotionValue(0);
-  const pointerY = useMotionValue(0);
-  const imageX = useTransform(pointerX, [-0.5, 0.5], [-10, 10]);
-  const imageY = useTransform(pointerY, [-0.5, 0.5], [-8, 8]);
   const { scrollYProgress: heroProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
   });
   const heroCopyY = useTransform(heroProgress, [0, 1], [0, 80]);
-  const heroMediaY = useTransform(heroProgress, [0, 1], [0, -48]);
-  const combinedHeroY = useTransform(() => imageY.get() + heroMediaY.get());
-  const heroMediaScale = useTransform(heroProgress, [0, 1], [1, 0.94]);
-  const heroMediaRotate = useTransform(heroProgress, [0, 1], [0, -1.5]);
 
   return (
     <>
@@ -505,12 +493,6 @@ function App() {
         <section
           className="hero"
           ref={heroRef}
-          onPointerMove={(event) => {
-            if (reduce || !heroRef.current) return;
-            const rect = heroRef.current.getBoundingClientRect();
-            pointerX.set((event.clientX - rect.left) / rect.width - 0.5);
-            pointerY.set((event.clientY - rect.top) / rect.height - 0.5);
-          }}
         >
           <motion.div
             className="hero-orb hero-orb-one"
@@ -563,24 +545,6 @@ function App() {
               </MagneticLink>
             </motion.div>
           </motion.div>
-          <motion.div
-            className="hero-visual"
-            style={reduce ? undefined : {
-              x: imageX,
-              y: combinedHeroY,
-              scale: heroMediaScale,
-              rotate: heroMediaRotate,
-            }}
-            initial={reduce ? false : { opacity: 1, clipPath: "inset(0 100% 0 0)" }}
-            animate={{ opacity: 1, clipPath: "inset(0 0% 0 0)" }}
-            transition={{ duration: 1.1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <img src="/assets/hero-workstation.png" alt="Laptop and phone in a dark studio workspace" />
-            <div className="visual-caption">
-              <span>Designing for the web</span>
-              <span>Building with intelligence</span>
-            </div>
-          </motion.div>
         </section>
 
         <section className="work section" id="work">
@@ -616,17 +580,17 @@ function App() {
           <div className="experience-track">
             <Reveal className="experience-item">
               <span><SweepText>Contributor</SweepText></span>
-              <h3>Carmandi</h3>
+              <h3><DynamicWeight>Carmandi</DynamicWeight></h3>
               <p><ShinyPill>Vehicle inspection workflows and a full automotive marketplace across mobile and web.</ShinyPill></p>
             </Reveal>
             <Reveal className="experience-item" delay={0.08}>
               <span><SweepText>Independent builder</SweepText></span>
-              <h3>RozGo</h3>
+              <h3><DynamicWeight>RozGo</DynamicWeight></h3>
               <p><ShinyPill>Full-stack product ownership across authentication, media, analytics, review flows, and deployment.</ShinyPill></p>
             </Reveal>
             <Reveal className="experience-item" delay={0.16}>
               <span><SweepText>AI/ML</SweepText></span>
-              <h3>Computer vision</h3>
+              <h3><DynamicWeight>Computer vision</DynamicWeight></h3>
               <p><ShinyPill>Scene recognition, camera geometry, 3D reconstruction, edge detection, OCR, and image processing.</ShinyPill></p>
             </Reveal>
           </div>
@@ -647,16 +611,10 @@ function App() {
       <footer>
         <span>© {new Date().getFullYear()} Muhammad Aswab Khalil</span>
         <div>
-          <a
-            className="github-button"
+          <GithubButton
             href="https://github.com/aswab007-ops"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Visit Muhammad Aswab Khalil on GitHub"
-          >
-            <span className="github-icon-shell"><GithubLogo weight="fill" /></span>
-            <span className="github-button-bg" aria-hidden="true" />
-          </a>
+            label="Visit Muhammad Aswab Khalil on GitHub"
+          />
           <a href="https://www.linkedin.com/in/muhammad-aswab-khalil-b578a235a/" target="_blank" rel="noreferrer" aria-label="LinkedIn"><LinkedinLogo /></a>
           <a className="underline-link" href="#top">Back to top <ArrowUpRight /></a>
         </div>

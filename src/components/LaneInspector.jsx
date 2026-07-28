@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowCounterClockwise, ImageSquare, UploadSimple } from "@phosphor-icons/react";
 import { clamp, gradients, luminance } from "./imageProcessing";
+import MeshTextHover from "./originkit/MeshTextHover";
+import SpotlightText from "./originkit/SpotlightText";
 
 const MODES = {
   original: { label: "Original", detail: "Unprocessed road image" },
@@ -260,12 +262,12 @@ function LaneInspector() {
       <div className="vision-heading">
         <div>
           <p className="section-kicker">Interactive project</p>
-          <h2>Find the road ahead.</h2>
+          <h2><MeshTextHover>Find the road ahead.</MeshTextHover></h2>
         </div>
-        <p>
+        <SpotlightText className="vision-description">
           Lane Detection isolates road markings, focuses on the drivable region,
           and estimates the lane boundaries directly in your browser.
-        </p>
+        </SpotlightText>
       </div>
 
       <div className="vision-shell">
