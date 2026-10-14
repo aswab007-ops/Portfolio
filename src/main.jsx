@@ -354,7 +354,7 @@ function App() {
               <li>Interface to deployment</li>
             </ul>
             <div className="proof-actions">
-              <a className="underline-link" href="/Muhammad-Aswab-Khalil-Resume.pdf" target="_blank" rel="noreferrer">
+              <a className="underline-link" href="/Muhammad-Aswab-Khalil-Resume.pdf?v=78ecb9ec" target="_blank" rel="noreferrer">
                 View Resume <ArrowUpRight />
               </a>
               <a className="underline-link" href="https://github.com/aswab007-ops?tab=repositories" target="_blank" rel="noreferrer">
