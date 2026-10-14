@@ -150,8 +150,8 @@ main, footer { position: relative; z-index: 1; }
   pointer-events: none;
 }
 .hero h1 em .mesh-text-hover {
-  margin-inline: -.1em;
-  padding-inline: .1em;
+  margin-inline: -.2em;
+  padding-inline: .2em;
   font-size: clamp(.62em, 10vw, 1em);
   white-space: nowrap;
 }

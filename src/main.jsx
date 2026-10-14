@@ -153,8 +153,8 @@ function ContactForm() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const subject = encodeURIComponent(`Portfolio inquiry from ${data.get("name")}`);
-    const body = encodeURIComponent(`${data.get("message")}\n\nReply to: ${data.get("email")}`);
-    window.location.href = `mailto:aswabkhalil@gmail.com?subject=${subject}&body=${body}`;
+    const body = encodeURIComponent(`${data.get("message")}\n\nName: ${data.get("name")}\nReply to: ${data.get("email")}`);
+    window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=aswabkhalil@gmail.com&su=${subject}&body=${body}`, "_blank", "noopener,noreferrer");
   };
 
   return (
