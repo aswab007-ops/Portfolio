@@ -1,13 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ArrowDownRight,
   ArrowUpRight,
-  GithubLogo,
   LinkedinLogo,
   PaperPlaneTilt,
 } from "@phosphor-icons/react";
 import {
+  AnimatePresence,
   motion,
   useMotionValue,
   useReducedMotion,
@@ -20,12 +20,11 @@ import "@fontsource/dm-sans/400.css";
 import "@fontsource/dm-sans/500.css";
 import "@fontsource/dm-sans/600.css";
 import "@fontsource/playfair-display/500-italic.css";
+import "@fontsource/playfair-display/600.css";
 import HoverImageReveal from "./components/originkit/HoverImageReveal";
 import MeshTextHover from "./components/originkit/MeshTextHover";
 import ShinyPill from "./components/originkit/ShinyPill";
-import DustTextReveal from "./components/originkit/DustTextReveal";
 import WaterButton from "./components/originkit/WaterButton";
-import DynamicWeight from "./components/originkit/DynamicWeight";
 import GithubButton from "./components/GithubButton";
 import CursorGrid from "./components/reactbits/CursorGrid/CursorGrid";
 import SplashCursor from "./components/reactbits/SplashCursor";
@@ -89,164 +88,6 @@ const aiProjects = [
     repo: "https://github.com/aswab007-ops/lane-detection",
   },
 ];
-
-const systems = [
-  {
-    id: "person-removal",
-    label: "Person Removal",
-    defaultNode: "sequence",
-    links: [
-      { label: "Source", href: "https://github.com/aswab007-ops/person-removal-through-change-detection" },
-    ],
-    nodes: [
-      {
-        id: "sequence",
-        eyebrow: "Input",
-        label: "Frame sequence",
-        title: "A scene observed over time",
-        description: "Ordered image frames provide stable background evidence and the later foreground sequence containing the moving subject.",
-        owned: ["Frame loading", "Dataset presets", "Sequence handling"],
-      },
-      {
-        id: "background",
-        eyebrow: "Model",
-        label: "Background",
-        title: "The empty scene becomes measurable",
-        description: "Stable frames build a per-pixel statistical background model that captures expected color and natural variation.",
-        owned: ["Background sampling", "Pixel statistics", "Model construction"],
-      },
-      {
-        id: "change",
-        eyebrow: "Detection",
-        label: "Mahalanobis",
-        title: "Motion separates from the scene",
-        description: "Each incoming pixel is compared with the learned model, turning statistically meaningful change into a foreground mask.",
-        owned: ["Distance scoring", "Threshold tuning", "Binary masks"],
-      },
-      {
-        id: "cleanup",
-        eyebrow: "Refinement",
-        label: "Mask cleanup",
-        title: "Noise gives way to a clear subject",
-        description: "Morphological filtering and connected-component checks remove scattered detections while preserving meaningful moving regions.",
-        owned: ["Morphology", "Blob filtering", "Area controls"],
-      },
-      {
-        id: "reconstruction",
-        eyebrow: "Output",
-        label: "Person removed",
-        title: "The background replaces the subject",
-        description: "Clean masks guide alpha blending, reconstructing the hidden scene and exporting processed frames and a final video.",
-        owned: ["Alpha blending", "Frame export", "Video assembly"],
-      },
-    ],
-  },
-  {
-    id: "scene-recognition",
-    label: "Scene Recognition",
-    defaultNode: "dataset",
-    links: [
-      { label: "Source", href: "https://github.com/aswab007-ops/scene-recognition-using-bow-and-resnet" },
-    ],
-    nodes: [
-      {
-        id: "dataset",
-        eyebrow: "Input",
-        label: "15 scene classes",
-        title: "Images enter a shared benchmark",
-        description: "Training and test folders organize fifteen indoor and outdoor scene categories for repeatable comparison.",
-        owned: ["Dataset loading", "Train-test split", "Label handling"],
-      },
-      {
-        id: "features",
-        eyebrow: "Features",
-        label: "SIFT · ResNet",
-        title: "Two ways to describe a scene",
-        description: "Local SIFT descriptors and deep ResNet embeddings create parallel feature representations for the same recognition task.",
-        owned: ["SIFT extraction", "ResNet backbone", "Feature caching"],
-      },
-      {
-        id: "representation",
-        eyebrow: "Encoding",
-        label: "K-Means · BoVW",
-        title: "Local features become visual words",
-        description: "K-Means builds a visual vocabulary, then SIFT descriptors are counted into fixed-length Bag of Visual Words histograms.",
-        owned: ["Vocabulary creation", "Histogram encoding", "Parameter sweeps"],
-      },
-      {
-        id: "classification",
-        eyebrow: "Models",
-        label: "KNN · SVM",
-        title: "Representations become predictions",
-        description: "KNN and SVM classifiers learn from both feature families, exposing how classical and deep representations compare.",
-        owned: ["KNN pipeline", "SVM training", "Model variants"],
-      },
-      {
-        id: "evaluation",
-        eyebrow: "Output",
-        label: "Metrics & reports",
-        title: "Every model is tested consistently",
-        description: "Automated evaluation compares accuracy, F1 score, runtime, confusion matrices, and saved result summaries across configurations.",
-        owned: ["Batch evaluation", "Metric parsing", "Result reporting"],
-      },
-    ],
-  },
-  {
-    id: "carmandi",
-    label: "Carmandi Inspection",
-    defaultNode: "interface",
-    privateNote: "Company's internal vehicle inspection app",
-    nodes: [
-      {
-        id: "interface",
-        eyebrow: "Interface",
-        label: "Flutter",
-        title: "A focused field workflow",
-        description: "The mobile interface guides inspectors through structured vehicle checks without burying the next action.",
-        owned: ["Flutter frontend", "Inspection forms", "Responsive states"],
-      },
-      {
-        id: "capture",
-        eyebrow: "Capture",
-        label: "Camera",
-        title: "Evidence gathered in context",
-        description: "Camera-led steps keep damage photos attached to the correct vehicle area and inspection record.",
-        owned: ["Camera integration", "Damage capture", "Media states"],
-      },
-      {
-        id: "offline",
-        eyebrow: "Local data",
-        label: "Offline-first",
-        title: "Field work survives weak signal",
-        description: "Inspection progress and media remain available locally, so an unstable connection does not stop the workflow.",
-        owned: ["Local persistence", "Draft recovery", "Offline UX"],
-      },
-      {
-        id: "sync",
-        eyebrow: "Sync",
-        label: "REST API",
-        title: "Mobile data reaches the backend",
-        description: "Structured inspection records and media metadata move through a REST API with reliable state handling.",
-        owned: ["REST backend", "Payload design", "Sync states"],
-      },
-      {
-        id: "review",
-        eyebrow: "Outcome",
-        label: "Inspection record",
-        title: "A complete vehicle history",
-        description: "Captured details, checks, and damage evidence resolve into one reviewable inspection record.",
-        owned: ["Review flow", "Record structure", "End-to-end delivery"],
-      },
-    ],
-  },
-];
-
-systems.splice(1, 2, systems[2], systems[1]);
-
-console.assert(
-  systems.every((system) => system.nodes.some((node) => node.id === system.defaultNode)),
-  "Every system must declare a valid default node.",
-);
 
 function Reveal({ children, className = "", delay = 0 }) {
   const reduce = useReducedMotion();
@@ -337,123 +178,9 @@ function ContactForm() {
   );
 }
 
-function SystemAnatomy() {
-  const [activeSystemId, setActiveSystemId] = useState(systems[0].id);
-  const [activeNodeId, setActiveNodeId] = useState(systems[0].defaultNode);
-  const tabRefs = useRef([]);
-  const activeSystem = systems.find((system) => system.id === activeSystemId);
-  const activeNode = activeSystem.nodes.find((node) => node.id === activeNodeId);
-
-  const selectSystem = (system) => {
-    setActiveSystemId(system.id);
-    setActiveNodeId(system.defaultNode);
-  };
-
-  const handleTabKeyDown = (event, index) => {
-    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
-    event.preventDefault();
-    const last = systems.length - 1;
-    const next = event.key === "Home"
-      ? 0
-      : event.key === "End"
-        ? last
-        : event.key === "ArrowRight"
-          ? (index + 1) % systems.length
-          : (index - 1 + systems.length) % systems.length;
-    selectSystem(systems[next]);
-    tabRefs.current[next]?.focus();
-  };
-
-  return (
-    <section className="system-anatomy section" id="under-the-hood">
-      <Reveal className="system-anatomy-heading">
-        <p className="section-kicker"><SweepText>System anatomy</SweepText></p>
-        <h2><MeshTextHover>Under the hood.</MeshTextHover></h2>
-        <p><ShinyPill>Follow each project from first input to finished outcome.</ShinyPill></p>
-      </Reveal>
-
-      <Reveal className="system-anatomy-shell">
-        <div className="system-tabs" role="tablist" aria-label="Choose a project">
-          {systems.map((system, index) => (
-            <button
-              className={system.id === activeSystemId ? "is-active" : ""}
-              id={`system-tab-${system.id}`}
-              key={system.id}
-              onClick={() => selectSystem(system)}
-              onKeyDown={(event) => handleTabKeyDown(event, index)}
-              ref={(element) => { tabRefs.current[index] = element; }}
-              role="tab"
-              tabIndex={system.id === activeSystemId ? 0 : -1}
-              aria-controls="system-anatomy-panel"
-              aria-selected={system.id === activeSystemId}
-            >
-              {system.label}
-            </button>
-          ))}
-        </div>
-
-        <div
-          className="system-anatomy-content"
-          id="system-anatomy-panel"
-          role="tabpanel"
-          aria-labelledby={`system-tab-${activeSystem.id}`}
-        >
-          <div className="system-flow" aria-label={`${activeSystem.label} project flow`}>
-            {activeSystem.nodes.map((node, index) => (
-              <React.Fragment key={node.id}>
-                <button
-                  className={`system-node${node.id === activeNode.id ? " is-active" : ""}`}
-                  onClick={() => setActiveNodeId(node.id)}
-                  aria-pressed={node.id === activeNode.id}
-                  aria-label={`Show ${node.eyebrow}: ${node.label}`}
-                >
-                  <span>{node.eyebrow}</span>
-                  <strong>{node.label}</strong>
-                </button>
-                {index < activeSystem.nodes.length - 1 && (
-                  <span className="system-connector" style={{ "--connector-index": index }} aria-hidden="true" />
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-
-          <aside className="system-detail" key={`${activeSystem.id}-${activeNode.id}`} aria-live="polite">
-            <DustTextReveal as="p">{activeNode.eyebrow}</DustTextReveal>
-            <DustTextReveal as="h3" delay={0.04}>{activeNode.title}</DustTextReveal>
-            <DustTextReveal as="p" delay={0.08}>{activeNode.description}</DustTextReveal>
-            <div className="system-owned">
-              <DustTextReveal>What I owned</DustTextReveal>
-              <ul>
-                {activeNode.owned.map((item, index) => (
-                  <li key={item}><DustTextReveal delay={0.1 + index * 0.035}>{item}</DustTextReveal></li>
-                ))}
-              </ul>
-            </div>
-            <div className="system-proof">
-              {activeSystem.links?.map((link) => link.label === "Source" ? (
-                <GithubButton
-                  href={link.href}
-                  key={link.label}
-                  label={`View ${activeSystem.label} source on GitHub`}
-                />
-              ) : (
-                <a href={link.href} key={link.label} target={link.href.startsWith("http") ? "_blank" : undefined} rel={link.href.startsWith("http") ? "noreferrer" : undefined}>
-                  <DustTextReveal>{link.label}</DustTextReveal> <ArrowUpRight />
-                </a>
-              ))}
-              {activeSystem.privateNote && (
-                <DustTextReveal className="system-private-note">{activeSystem.privateNote}</DustTextReveal>
-              )}
-            </div>
-          </aside>
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
 function App() {
   const reduce = useReducedMotion();
+  const [showSplash, setShowSplash] = useState(true);
   const heroRef = useRef(null);
   const { scrollYProgress: heroProgress } = useScroll({
     target: heroRef,
@@ -461,8 +188,57 @@ function App() {
   });
   const heroCopyY = useTransform(heroProgress, [0, 1], [0, 80]);
 
+  useEffect(() => {
+    document.body.classList.toggle("splash-active", showSplash);
+    return () => document.body.classList.remove("splash-active");
+  }, [showSplash]);
+
+  useEffect(() => {
+    if (!showSplash) return undefined;
+    const timeout = window.setTimeout(() => setShowSplash(false), reduce ? 650 : 2600);
+    return () => window.clearTimeout(timeout);
+  }, [reduce, showSplash]);
+
   return (
     <>
+      <AnimatePresence>
+        {showSplash && (
+          <motion.div
+            className="portfolio-splash"
+            initial={{ opacity: 1 }}
+            exit={
+              reduce
+                ? { opacity: 0 }
+                : {
+                    opacity: 0,
+                    y: "-3%",
+                    filter: "blur(8px)",
+                    transition: { duration: 0.68, ease: [0.76, 0, 0.24, 1] },
+                  }
+            }
+            role="status"
+            aria-label="Opening Muhammad Aswab Khalil’s portfolio"
+          >
+            <div className="splash-lockup">
+              <motion.h1
+                className="splash-wordmark"
+                initial={reduce ? false : { opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <span className="splash-initial">A</span>swab
+              </motion.h1>
+              <div className="splash-progress" aria-hidden="true">
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: reduce ? 0 : 2.05, ease: [0.65, 0, 0.35, 1] }}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <CursorGrid
         className="cursor-grid-bg"
         cellSize={30}
@@ -485,8 +261,8 @@ function App() {
         CAPTURE_RESOLUTION={384}
         COLOR_UPDATE_SPEED={4}
         CURL={4}
-        SPLAT_RADIUS={0.18}
-        SPLAT_FORCE={4600}
+        SPLAT_RADIUS={0.17}
+        SPLAT_FORCE={4300}
       />
       <ScrollProgress />
       <main id="top">
@@ -510,7 +286,7 @@ function App() {
             className="hero-copy"
             style={reduce ? undefined : { y: heroCopyY }}
             initial={reduce ? false : "hidden"}
-            animate="visible"
+            animate={showSplash ? "hidden" : "visible"}
             variants={{
               hidden: {},
               visible: { transition: { staggerChildren: 0.1 } },
@@ -525,8 +301,8 @@ function App() {
                 visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } },
               }}
             >
-              <MeshTextHover>Web developer.</MeshTextHover><br />
-              <em><MeshTextHover>AI/ML engineer.</MeshTextHover></em>
+              <MeshTextHover>Web Developer.</MeshTextHover><br />
+              <em><MeshTextHover>AI/ML Engineer.</MeshTextHover></em>
             </motion.h1>
             <motion.p className="hero-lede" variants={{ hidden: { opacity: 1 }, visible: { opacity: 1 } }}>
               <ShinyPill>I build thoughtful interfaces and intelligent systems that turn complex ideas into useful products.</ShinyPill>
@@ -549,9 +325,9 @@ function App() {
 
         <section className="work section" id="work">
           <Reveal className="section-heading">
-            <p className="section-kicker"><SweepText>Works</SweepText></p>
-            <h2><MeshTextHover>Products with purpose.</MeshTextHover></h2>
-            <p><ShinyPill>Full-stack platforms, product experiences, and practical AI built from the interface down.</ShinyPill></p>
+            <p className="section-kicker"><SweepText>Web &amp; product</SweepText></p>
+            <h2><MeshTextHover>From interface to deployment.</MeshTextHover></h2>
+            <p><ShinyPill>Production work across income verification, vehicle inspection, and automotive commerce.</ShinyPill></p>
           </Reveal>
           <HoverImageReveal items={projects} />
           <Reveal className="archive-link">
@@ -563,44 +339,36 @@ function App() {
 
         <section className="work section ai-work" id="ai-work">
           <Reveal className="section-heading">
-            <p className="section-kicker"><SweepText>AI/ML &amp; Computer Vision</SweepText></p>
-            <h2><MeshTextHover>Intelligence you can try.</MeshTextHover></h2>
-            <p><ShinyPill>Computer-vision systems built from first principles, classical feature pipelines, and deep learning.</ShinyPill></p>
+            <p className="section-kicker"><SweepText>Applied AI/ML · Computer Vision</SweepText></p>
+            <h2><MeshTextHover>From pixels to structure.</MeshTextHover></h2>
+            <p><ShinyPill>Scene recognition, edge detection, and lane geometry implemented from first principles.</ShinyPill></p>
           </Reveal>
           <HoverImageReveal items={aiProjects} />
         </section>
 
-        <SystemAnatomy />
-
-        <section className="experience section">
-          <Reveal className="experience-heading">
-            <h2><MeshTextHover>Building across disciplines.</MeshTextHover></h2>
-            <p><ShinyPill>My work connects product craft with technical depth.</ShinyPill></p>
+        <section className="proof-bridge" aria-label="Portfolio highlights">
+          <Reveal className="proof-bridge-inner">
+            <ul className="proof-facts">
+              <li>3 web products</li>
+              <li>3 computer-vision systems</li>
+              <li>Interface to deployment</li>
+            </ul>
+            <div className="proof-actions">
+              <a className="underline-link" href="/Muhammad-Aswab-Khalil-Resume.pdf" target="_blank" rel="noreferrer">
+                View Resume <ArrowUpRight />
+              </a>
+              <a className="underline-link" href="https://github.com/aswab007-ops?tab=repositories" target="_blank" rel="noreferrer">
+                GitHub archive <ArrowUpRight />
+              </a>
+            </div>
           </Reveal>
-          <div className="experience-track">
-            <Reveal className="experience-item">
-              <span><SweepText>Contributor</SweepText></span>
-              <h3><DynamicWeight>Carmandi</DynamicWeight></h3>
-              <p><ShinyPill>Vehicle inspection workflows and a full automotive marketplace across mobile and web.</ShinyPill></p>
-            </Reveal>
-            <Reveal className="experience-item" delay={0.08}>
-              <span><SweepText>Independent builder</SweepText></span>
-              <h3><DynamicWeight>RozGo</DynamicWeight></h3>
-              <p><ShinyPill>Full-stack product ownership across authentication, media, analytics, review flows, and deployment.</ShinyPill></p>
-            </Reveal>
-            <Reveal className="experience-item" delay={0.16}>
-              <span><SweepText>AI/ML</SweepText></span>
-              <h3><DynamicWeight>Computer vision</DynamicWeight></h3>
-              <p><ShinyPill>Scene recognition, camera geometry, 3D reconstruction, edge detection, OCR, and image processing.</ShinyPill></p>
-            </Reveal>
-          </div>
         </section>
 
         <section className="contact section" id="contact">
           <Reveal className="contact-inner">
             <div className="contact-copy">
-              <p className="section-kicker"><SweepText>Start a conversation</SweepText></p>
-              <h2><MeshTextHover>Have an idea worth building?</MeshTextHover></h2>
+              <p className="section-kicker"><SweepText>Available for select work</SweepText></p>
+              <h2><MeshTextHover>Need product thinking and technical depth?</MeshTextHover></h2>
               <p><ShinyPill>I’m open to web, product, and applied AI/ML opportunities.</ShinyPill></p>
             </div>
             <ContactForm />

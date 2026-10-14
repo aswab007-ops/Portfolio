@@ -3,8 +3,6 @@ import { ArrowUpRight, GithubLogo } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
 import SweepText from "../SweepText";
 import ShinyPill from "./ShinyPill";
-import RandomLetterSwap from "./RandomLetterSwap";
-import LiquidDistortion from "./LiquidDistortion";
 
 // Adapted from OriginKit's Hover Image Reveal component.
 export default function HoverImageReveal({ items }) {
@@ -21,7 +19,6 @@ export default function HoverImageReveal({ items }) {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.7, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
         >
-          <LiquidDistortion seed={index + 1} />
           <div className="project-reveal-index">
             <span>0{index + 1}</span>
             {project.displayTypeLines ? (
@@ -42,7 +39,9 @@ export default function HoverImageReveal({ items }) {
           </div>
 
           <div className="project-reveal-side">
-            <RandomLetterSwap text={project.tags.join(" · ")} />
+            <ul className="project-tech" aria-label={`${project.title} technologies`}>
+              {project.tags.map((tag) => <li key={tag}>{tag}</li>)}
+            </ul>
             <div className="project-links">
               {project.live && (
                 <a href={project.live} target="_blank" rel="noreferrer">
