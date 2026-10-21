@@ -188,16 +188,24 @@ export default function MeshTextHover({
 
     const drawTexture = () => {
       const rect = wrapper.getBoundingClientRect();
+      const style = getComputedStyle(source);
+      // Italic glyphs and mesh movement can extend beyond the DOM text box.
+      const gutter = Math.ceil(Number.parseFloat(style.fontSize) * 0.4);
+      const width = rect.width + gutter * 2;
+      const height = rect.height + gutter * 2;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(2, Math.round(rect.width * dpr));
-      canvas.height = Math.max(2, Math.round(rect.height * dpr));
+      canvas.style.left = `${-gutter}px`;
+      canvas.style.top = `${-gutter}px`;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      canvas.width = Math.max(2, Math.round(width * dpr));
+      canvas.height = Math.max(2, Math.round(height * dpr));
       gl.viewport(0, 0, canvas.width, canvas.height);
 
       const textureCanvas = document.createElement("canvas");
       textureCanvas.width = canvas.width;
       textureCanvas.height = canvas.height;
       const context = textureCanvas.getContext("2d");
-      const style = getComputedStyle(source);
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
       context.fillStyle = style.color;
       context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
@@ -209,8 +217,8 @@ export default function MeshTextHover({
         const wordRect = word.getBoundingClientRect();
         context.fillText(
           word.textContent,
-          wordRect.left - rect.left,
-          wordRect.top - rect.top + wordRect.height / 2
+          wordRect.left - rect.left + gutter,
+          wordRect.top - rect.top + wordRect.height / 2 + gutter
         );
       });
 
@@ -259,7 +267,7 @@ export default function MeshTextHover({
     };
 
     const onMove = (event) => {
-      const rect = wrapper.getBoundingClientRect();
+      const rect = canvas.getBoundingClientRect();
       const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       const y = 1 - ((event.clientY - rect.top) / rect.height) * 2;
       if (!cursor.inside) {
